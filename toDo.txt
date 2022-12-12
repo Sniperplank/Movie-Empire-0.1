@@ -1,0 +1,4 @@
+- Login/signup errors color (make red)
+
+- hide add review if not signed in 
+
