@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, FlatList } from 'react-native'
+import { View, Text, StyleSheet, TextInput, FlatList, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { addToWatchLater, addToFavourites, addToHistory, addToSearchResult, addReview } from '../redux/actions/movies'
@@ -11,6 +11,8 @@ const MovieDetails = ({ navigation, moviesState, addToFavourites, addToWatchLate
     const [reviews, setReviews] = useState([])
     const [rating, setRating] = useState('')
     const [avgRating, setAvgRating] = useState('')
+    const [movieLoading, setMovieLoading] = useState(true)
+    const [reviewloading, setreviewLoading] = useState(true)
 
     useEffect(() => {
         const reviewsList = []
@@ -19,6 +21,8 @@ const MovieDetails = ({ navigation, moviesState, addToFavourites, addToWatchLate
             const movie = moviesState.searchResult[i];
             if (movie.imdbID === id) {
                 setMovie(movie)
+                setMovieLoading(false)
+                break
             }
         }
         for (let i = 0; i < moviesState.reviews.length; i++) {
@@ -30,6 +34,7 @@ const MovieDetails = ({ navigation, moviesState, addToFavourites, addToWatchLate
         }
         setAvgRating(totalRating / moviesState.reviews.length)
         setReviews(reviewsList)
+        setreviewLoading(false)
     }, [moviesState])
 
     const handleReviewSubmit = () => {
@@ -37,13 +42,13 @@ const MovieDetails = ({ navigation, moviesState, addToFavourites, addToWatchLate
     }
 
     const onCheckRating = (value) => {
-        const parsedQty = Number.parseInt(value)
-        if (Number.isNaN(parsedQty)) {
+        const parsedValue = Number.parseInt(value)
+        if (Number.isNaN(parsedValue)) {
             setRating(0)
-        } else if (parsedQty > 10) {
+        } else if (parsedValue > 10) {
             setRating(10)
         } else {
-            setRating(parsedQty)
+            setRating(parsedValue)
         }
     }
 
@@ -57,18 +62,20 @@ const MovieDetails = ({ navigation, moviesState, addToFavourites, addToWatchLate
 
     return (
         <View style={styles.container} >
-            <Text>{movie?.Title} - {Number.isNaN(avgRating) ? 'No rating yet!' : avgRating} / 10</Text>
-            <Button title='Save to Watch Later' onPress={() => { addToWatchLater(movie) }} />
-            <Button title='Add to Favourites' onPress={() => { addToFavourites(movie) }} />
-            { user !== "No user" && <View>
-                <TextInput style={styles.reviewInput} placeholder="Write a review..." onChangeText={setReview} />
-                <TextInput style={styles.reviewInput} placeholder="Rating: /10" value={rating} onChangeText={onCheckRating} />
-                <Button title='Submit Review' onPress={handleReviewSubmit} />
-            </View>}
-            <View>
-                <Text>Reviews:</Text>
-                <FlatList data={reviews} renderItem={renderReviews} />
-            </View>
+            {movieLoading ? (<View> <ActivityIndicator size={50} color="orange" /> </View>) :
+                <View>
+                    <Text>{movie?.Title} - {Number.isNaN(avgRating) ? 'No rating yet!' : avgRating} / 10</Text>
+                    <Button title='Save to Watch Later' onPress={() => { addToWatchLater(movie) }} />
+                    <Button title='Add to Favourites' onPress={() => { addToFavourites(movie) }} />
+                    {user !== "Sign in to add review!" && <View>
+                        <TextInput style={styles.reviewInput} placeholder="Write a review..." onChangeText={setReview} />
+                        <TextInput style={styles.reviewInput} placeholder="Rating: /10" value={rating} onChangeText={onCheckRating} />
+                        <Button title='Submit Review' onPress={handleReviewSubmit} />
+                    </View>}
+                </View>}
+            <Text>Reviews:</Text>
+            {reviewloading ? (<View><ActivityIndicator size={50} color="orange" /></View>) :
+                <FlatList data={reviews} renderItem={renderReviews} />}
             <Button title="Back" onPress={() => {
                 navigation.navigate("Search Result", { searchText: searchText })
             }} />
