@@ -1,8 +1,9 @@
-import { View, Text, FlatList, SafeAreaView, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, ActivityIndicator, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { addToWatchLater, addToFavourites, addToHistory, addToSearchResult, clearSearchResult } from '../redux/actions/movies'
 import Button from '../custom componet/Button'
+import styles from '../custom componet/Styles'
 
 const SearchResults = ({ navigation, moviesState, addToSearchResult, addToHistory, clearSearchResult, route }) => {
   const { searchtext, user } = route.params;
@@ -24,20 +25,21 @@ const SearchResults = ({ navigation, moviesState, addToSearchResult, addToHistor
   }, []);
 
   const renderSearchResults = ({ item }) => (
-    <SafeAreaView>
-      <View>
-        <Text>{item.Title}</Text>
-        <Button title="Details" onPress={() => {
-          addToHistory(item)
-          navigation.navigate("Movie Details", { id: item.imdbID, searchtext: searchtext, user: user })
-        }} />
+    <View style={styles.container}>
+      <View style={styles.movieCard}>
+        <Image source={{ uri: item.Poster, width: 100, height: 100 }} />
+        <Text style={styles.text}>{item.Title}</Text>
       </View>
-    </SafeAreaView>
+      <Button title="Details" onPress={() => {
+        addToHistory(item)
+        navigation.navigate("Movie Details", { id: item.imdbID, searchtext: searchtext, user: user })
+      }} />
+    </View>
   );
 
   return (
-    <View>
-      <Text>Showing Results For: {searchtext}</Text>
+    <View style={styles.container}>
+      <Text style={{ fontWeight: 'bold', fontSize: 18, color: 'white' }}>Showing Results For: {searchtext}</Text>
       {
         loading ? (<View> <ActivityIndicator size={50} color='orange' /> </View>) :
           <FlatList data={moviesState.searchResult} renderItem={renderSearchResults} />

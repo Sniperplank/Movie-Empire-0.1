@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { login, logout, signup_ } from '../redux/actions/users'
 import { clearSearchResult } from '../redux/actions/movies'
 import Button from '../custom componet/Button'
+import styles from '../custom componet/Styles'
 
 const Home = ({ navigation, userState, logout }) => {
   const [user, setUser] = useState(userState[0]?.result ? userState[0].result : "No user")
@@ -86,10 +87,10 @@ const Home = ({ navigation, userState, logout }) => {
           </View>
         </View>
       </Modal>
-      <Text>{userState[0]?.result?.name ? `Welcome, ${userState[0]?.result?.name}!` : ''}</Text>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'orange' }}>{userState[0]?.result?.name ? `Welcome, ${userState[0]?.result?.name}!` : ''}</Text>
       <View style={styles.animationContainer}>
         <Animated.View style={{ transform: [{ translateX }] }}>
-          <Text ref={ref} style={{ margin: 20, fontWeight: 'bold', fontSize: 24 }}>Movie Empire</Text>
+          <Text ref={ref} style={styles.pageTitle}>Movie Empire</Text>
         </Animated.View>
         <Animated.View
           style={{
@@ -98,17 +99,10 @@ const Home = ({ navigation, userState, logout }) => {
             height: 50,
             transform: [{ scale: searchAnimation }],
           }}>
-          <TextInput style={{
-            borderWidth: 1,
-            borderColor: 'orange',
-            borderRadius: 10,
-            borderStyle: 'solid',
-            textAlign: 'center',
-            height: 30
-          }} placeholder="Search for a movie..." value={search} onChangeText={setSearch} />
+          <TextInput style={styles.input} placeholder="Search for a movie..." value={search} onChangeText={setSearch} />
         </Animated.View>
       </View>
-      <Text>{errors}</Text>
+      <Text style={styles.errors}>{errors}</Text>
       <View style={styles.buttonsContainer}>
         <Button title='Search' onPress={() => {
           if (search.length < 1) {
@@ -122,15 +116,6 @@ const Home = ({ navigation, userState, logout }) => {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  buttonsContainer: { justifyContent: "center", margin: 20, display: 'flex', flexDirection: 'row' },
-  animationContainer: { justifyContent: "center", alignItems: "center" },
-  searchinput: { margin: 15, width: "50%", height: 30, alignItems: 'left', borderWidth: 2 },
-  modalText: { marginBottom: 10 },
-  modalView: { width: "80%", height: 'auto', margin: 5, backgroundColor: "black", borderColor: "red", borderWidth: 1, borderRadius: 5, padding: 15, alignItems: "center", justifyContent: "space-between" },
-});
 
 const mapStateToProps = (userState) => (userState)
 const mapDispatchToProps = { login, logout, signup_, clearSearchResult }

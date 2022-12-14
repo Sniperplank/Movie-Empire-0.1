@@ -1,17 +1,21 @@
-import { View, Text,FlatList } from 'react-native'
+import { View, Text, FlatList, Image } from 'react-native'
 import React from 'react'
 import { connect } from 'react-redux'
 import { addToWatchLater, addToFavourites, addToHistory, addToSearchResult, clearSearchResult } from '../redux/actions/movies'
 import Button from '../custom componet/Button';
+import styles from '../custom componet/Styles';
 
 const renderFavourites = ({ item }) => (
-  <Text>{item.Title}</Text>
+  <View style={styles.movieCard}>
+    <Image source={{ uri: item.Poster, width: 100, height: 100 }} />
+    <Text style={styles.text}>{item.Title}</Text>
+  </View>
 );
 
 const Favourites = ({ navigation, moviesState, clearSearchResult }) => {
   return (
-    <View>
-      <Text>favourites</Text>
+    <View style={styles.container}>
+      <Text style={styles.pageTitle} >Favourites</Text>
       <FlatList data={moviesState.favourites} renderItem={renderFavourites} />
       <Button title="Back" onPress={() => {
         clearSearchResult()
